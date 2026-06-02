@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FounderOS — Your Productivity HQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --purple:#7F77DD;--purple-dark:#534AB7;--purple-light:#EEEDFE;--purple-text:#3C3489;
+  --teal:#1D9E75;--teal-dark:#0F6E56;--teal-light:#E1F5EE;--teal-text:#085041;
+  --amber:#EF9F27;--amber-dark:#854F0B;--amber-light:#FAEEDA;
+  --coral:#D85A30;--coral-dark:#993C1D;--coral-light:#FAECE7;
+  --pink:#D4537E;--pink-dark:#993356;--pink-light:#FBEAF0;
+  --blue:#378ADD;--blue-dark:#185FA5;--blue-light:#E6F1FB;
+  --green:#639922;--green-dark:#3B6D11;--green-light:#EAF3DE;
+  --bg:#F7F6F3;--bg2:#FFFFFF;--bg3:#EFEDE8;
+  --text:#1A1A18;--text2:#5A5955;--text3:#9A9893;
+  --border:rgba(0,0,0,0.09);--border2:rgba(0,0,0,0.15);
+  --radius:8px;--radius-lg:12px;--radius-xl:16px;
+  --font:'DM Sans',sans-serif;--font-mono:'DM Mono',monospace;
+  --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg:0 4px 16px rgba(0,0,0,0.08),0 1px 4px rgba(0,0,0,0.04);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#18181A;--bg2:#222224;--bg3:#2A2A2C;
+    --text:#E8E6E0;--text2:#9A9890;--text3:#62605A;
+    --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+    --purple-light:#26215C;--purple-text:#AFA9EC;
+    --teal-light:#04342C;--teal-text:#5DCAA5;
+    --amber-light:#412402;--amber-dark:#FAC775;
+    --coral-light:#4A1B0C;--coral-dark:#F0997B;
+    --pink-light:#4B1528;--pink-dark:#ED93B1;
+    --blue-light:#042C53;--blue-dark:#85B7EB;
+    --green-light:#173404;--green-dark:#97C459;
+    --shadow:0 1px 3px rgba(0,0,0,0.3);--shadow-lg:0 4px 16px rgba(0,0,0,0.4);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg)}
+.app{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:200px;min-width:200px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:12px 8px;gap:2px;overflow-y:auto}
+.logo{font-size:16px;font-weight:500;color:var(--text);padding:6px 10px 12px;border-bottom:1px solid var(--border);margin-bottom:6px;letter-spacing:-0.3px}
+.logo span{color:var(--purple)}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:var(--radius);cursor:pointer;font-size:12px;color:var(--text2);transition:all .15s;user-select:none}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--purple-light);color:var(--purple-dark);font-weight:500}
+.nav-item i{font-size:15px;flex-shrink:0}
+.sec-label{font-size:10px;color:var(--text3);padding:8px 10px 3px;text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sidebar-footer{margin-top:auto;padding-top:10px;border-top:1px solid var(--border)}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-title{font-size:14px;font-weight:500;color:var(--text)}
+.topbar-date{font-size:11px;color:var(--text3);margin-top:1px}
+.content{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+
+/* CARDS & METRICS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;box-shadow:var(--shadow)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.ct{font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:6px}
+.ct i{font-size:15px;color:var(--text3)}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.row2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.metric{background:var(--bg3);border-radius:var(--radius);padding:12px 14px}
+.metric-label{font-size:11px;color:var(--text3);margin-bottom:3px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.metric-value{font-size:22px;font-weight:500;color:var(--text);letter-spacing:-0.5px}
+.metric-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* BADGES */
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap}
+.bp{background:var(--purple-light);color:var(--purple-text)}.bt{background:var(--teal-light);color:var(--teal-text)}
+.ba{background:var(--amber-light);color:var(--amber-dark)}.bc{background:var(--coral-light);color:var(--coral-dark)}
+.bk{background:var(--pink-light);color:var(--pink-dark)}.bb{background:var(--blue-light);color:var(--blue-dark)}
+.bgn{background:var(--green-light);color:var(--green-dark)}.bgr{background:var(--bg3);color:var(--text2)}
+
+/* BUTTONS */
+.btn-sm{font-size:11px;padding:4px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:4px;transition:all .15s;font-family:var(--font)}
+.btn-sm:hover{background:var(--purple-light);color:var(--purple-dark);border-color:var(--purple)}
+.btn-p{background:var(--purple);color:#fff;border:none;border-radius:var(--radius);padding:6px 14px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:background .15s;font-family:var(--font);font-weight:500}
+.btn-p:hover{background:var(--purple-dark)}
+.btn-teal{background:var(--teal);color:#fff;border:none;border-radius:var(--radius);padding:5px 12px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-family:var(--font);font-weight:500}
+.btn-teal:hover{background:var(--teal-dark)}
+.btn-danger{background:none;border:1px solid var(--border2);color:var(--text2);border-radius:var(--radius);padding:4px 10px;font-size:11px;cursor:pointer;font-family:var(--font)}
+.btn-danger:hover{background:var(--coral-light);color:var(--coral-dark);border-color:var(--coral)}
+.icon-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:3px;line-height:1;transition:color .15s}
+.icon-btn:hover{color:var(--coral)}
+
+/* TASKS */
+.task-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.task-item:last-child{border-bottom:none}
+.chk{width:15px;height:15px;border-radius:4px;border:1.5px solid var(--border2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .15s}
+.chk:hover{border-color:var(--purple)}
+.chk.done{background:var(--purple);border-color:var(--purple)}
+.task-body{flex:1;min-width:0}
+.task-text{color:var(--text);line-height:1.4;font-size:12px}
+.task-text.done{text-decoration:line-through;color:var(--text3)}
+.task-meta{display:flex;gap:5px;margin-top:3px;flex-wrap:wrap;align-items:center}
+.task-time{font-size:11px;color:var(--text3)}
+
+/* MEETINGS */
+.meet-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.meet-item:last-child{border-bottom:none}
+.meet-time-block{width:38px;text-align:center;flex-shrink:0}
+.meet-hour{font-size:12px;font-weight:500;color:var(--text)}
+.meet-period{font-size:10px;color:var(--text3)}
+.meet-bar{width:3px;height:34px;border-radius:2px;flex-shrink:0}
+.meet-info{flex:1;min-width:0}
+.meet-name{font-size:12px;font-weight:500;color:var(--text)}
+.meet-detail{font-size:11px;color:var(--text2);margin-top:1px}
+
+/* PROJECTS */
+.proj-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:all .15s}
+.proj-row:last-child{border-bottom:none}
+.proj-row:hover .proj-name{color:var(--purple)}
+.proj-name{font-size:12px;color:var(--text);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog-track{flex:0 0 80px;height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .3s}
+.prog-pct{font-size:11px;color:var(--text2);min-width:26px;text-align:right}
+
+/* GOALS */
+.goal-item{padding:8px 0;border-bottom:1px solid var(--border)}
+.goal-item:last-child{border-bottom:none}
+.goal-header{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.goal-label{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.goal-track{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.goal-fill{height:100%;border-radius:3px;transition:width .4s}
+
+/* AI PANEL */
+.ai-panel{width:248px;min-width:248px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.ai-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;flex-shrink:0}
+.ai-head-title{font-size:13px;font-weight:500;color:var(--text)}
+.ai-badge{font-size:10px;padding:1px 7px;border-radius:20px;background:var(--purple-light);color:var(--purple-text);font-weight:500}
+.ai-msgs{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px}
+.ai-msg{font-size:12px;line-height:1.55;padding:8px 10px;border-radius:var(--radius);white-space:pre-wrap}
+.ai-msg.ai{background:var(--purple-light);color:var(--purple-text)}
+.ai-msg.user{background:var(--bg3);color:var(--text)}
+.ai-msg.loading{color:var(--text3);font-style:italic}
+.chips{padding:7px 10px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:5px;flex-shrink:0}
+.chip{font-size:11px;padding:3px 9px;border:1px solid var(--border2);border-radius:20px;cursor:pointer;color:var(--text2);background:var(--bg3);white-space:nowrap;transition:all .15s}
+.chip:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-light)}
+.ai-inp-row{padding:8px 10px;border-top:1px solid var(--border);display:flex;gap:6px;flex-shrink:0}
+.ai-inp-row input{flex:1;font-size:12px;padding:6px 10px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);font-family:var(--font);outline:none}
+.ai-inp-row input:focus{border-color:var(--purple)}
+.ai-send{background:var(--purple);color:#fff;border:none;border-radius:var(--radius);padding:6px 10px;cursor:pointer;font-size:13px;transition:background .15s}
+.ai-send:hover{background:var(--purple-dark)}
+
+/* CALENDAR */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dh{font-size:10px;color:var(--text3);text-align:center;padding:3px 0;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.cal-cell{min-height:60px;border-radius:var(--radius);border:1px solid var(--border);padding:5px 6px;background:var(--bg2);cursor:pointer;transition:all .12s}
+.cal-cell:hover{border-color:var(--purple);background:var(--purple-light)}
+.cal-cell.today{border-color:var(--purple);background:var(--purple-light)}
+.cal-cell.other-month{background:var(--bg3);opacity:.5}
+.cal-cell.drag-over{border-color:var(--teal);background:var(--teal-light)}
+.cal-num{font-size:11px;font-weight:500;color:var(--text);margin-bottom:3px}
+.cal-cell.today .cal-num{color:var(--purple-dark);font-weight:600}
+.cal-pill{font-size:9px;padding:2px 5px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;margin-top:2px;cursor:grab;user-select:none;transition:opacity .15s}
+.cal-pill:hover{opacity:.8}
+.cal-pill.dragging{opacity:.3;cursor:grabbing}
+
+/* OVERLAY */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;z-index:100;padding-top:30px;backdrop-filter:blur(2px)}
+.ov.hidden{display:none}
+.panel{background:var(--bg2);border-radius:var(--radius-xl);border:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-lg);animation:panelIn .2s ease}
+@keyframes panelIn{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+.ph{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;flex-shrink:0;background:var(--bg2)}
+.pt{font-size:14px;font-weight:500;color:var(--text);flex:1}
+.ptabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
+.ptab{padding:9px 14px;font-size:12px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .15s}
+.ptab:hover{color:var(--text)}
+.ptab.active{color:var(--purple);border-bottom-color:var(--purple);font-weight:500}
+.tb{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+
+/* STUDIO */
+.studio-toolbar{display:flex;align-items:center;gap:5px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:8px}
+.mode-group{display:flex;border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden}
+.mode-btn{padding:5px 10px;font-size:11px;cursor:pointer;color:var(--text2);background:var(--bg3);border:none;display:flex;align-items:center;gap:3px;transition:all .15s;font-family:var(--font);border-right:1px solid var(--border2)}
+.mode-btn:last-child{border-right:none}
+.mode-btn:hover{background:var(--bg2);color:var(--text)}
+.mode-btn.active{background:var(--purple);color:#fff}
+.csw{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;transition:border-color .15s}
+.csw.active{border-color:var(--text)!important}
+.szb{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.szb.active{background:var(--purple);border-color:var(--purple)}
+
+/* PINS */
+.pin{position:absolute;width:24px;height:24px;border-radius:50%;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;cursor:pointer;transform:translate(-50%,-50%);z-index:5;user-select:none;transition:transform .12s;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.pin:hover{transform:translate(-50%,-50%) scale(1.15)}
+.pin.resolved{background:var(--teal)!important}
+.comment-item{padding:7px 0;border-top:1px solid var(--border)}
+.comment-time{font-size:10px;color:var(--text3);margin-bottom:3px}
+.comment-text{font-size:12px;color:var(--text);line-height:1.5}
+
+/* NOTES */
+.note-card{background:var(--bg3);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;border:1px solid var(--border)}
+.note-time{font-size:11px;color:var(--text3);margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+
+/* FORMS */
+input[type=text],input[type=date],input[type=email],select,textarea{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);color:var(--text);font-family:var(--font);font-size:12px;padding:6px 10px;outline:none;transition:border-color .15s}
+input[type=text]:focus,input[type=date]:focus,select:focus,textarea:focus{border-color:var(--purple)}
+input[type=range]{width:100%;accent-color:var(--purple)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+select{cursor:pointer}
+
+/* FOCUS MODE */
+.focus-task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.focus-task:last-child{border-bottom:none}
+.focus-task-text{flex:1;font-size:14px;color:var(--text);font-weight:500}
+
+/* SUBTASKS */
+.subtask-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border)}
+.subtask-item:last-child{border-bottom:none}
+.st{flex:1;font-size:12px;color:var(--text)}
+.st.done{text-decoration:line-through;color:var(--text3)}
+
+/* FILE */
+.file-drop{border:2px dashed var(--border2);border-radius:var(--radius-lg);padding:22px;text-align:center;color:var(--text3);cursor:pointer;transition:all .15s}
+.file-drop:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-light)}
+.file-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border-radius:var(--radius);margin-bottom:6px;border:1px solid var(--border)}
+.file-name{flex:1;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-size{font-size:11px;color:var(--text3);flex-shrink:0}
+
+.divider{width:1px;height:18px;background:var(--border2);margin:0 3px;flex-shrink:0}
+.hidden{display:none!important}
+.rel{position:relative}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg2);padding:10px 18px;border-radius:var(--radius-lg);font-size:12px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:var(--shadow-lg)}
+.toast.show{opacity:1}
+
+/* MODAL for add forms */
+.modal-form{display:flex;flex-direction:column;gap:10px;padding:18px}
+.form-row{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
+.form-row input,.form-row select,.form-row textarea{width:100%}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+</style>
+</head>
+<body>
+
+<div class="app rel" id="app">
+
+<div class="sidebar">
+  <div class="logo">Founder<span>OS</span></div>
+  <div class="nav-item active" onclick="showView('dashboard')" id="nav-dashboard"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+  <div class="nav-item" onclick="showView('calendar')" id="nav-calendar"><i class="ti ti-calendar"></i>Calendar</div>
+  <div class="nav-item" onclick="showView('tasks')" id="nav-tasks"><i class="ti ti-checklist"></i>All tasks</div>
+  <div class="nav-item" onclick="showView('goals')" id="nav-goals"><i class="ti ti-target"></i>Goals</div>
+  <div class="nav-item" onclick="activateFocus()"><i class="ti ti-bolt"></i>Focus mode</div>
+  <div class="sec-label">Projects</div>
+  <div id="sidebar-projects"></div>
+  <div class="sidebar-footer">
+    <div class="nav-item" onclick="openAddProject()"><i class="ti ti-plus"></i>New project</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="view-title">Good morning!</div>
+      <div class="topbar-date" id="topbar-date"></div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span class="badge bp" id="badge-tasks"></span>
+      <span class="badge ba" id="badge-mtg"></span>
+      <button class="btn-sm" onclick="openAddTask()"><i class="ti ti-plus" style="font-size:12px"></i>Task</button>
+      <button class="btn-sm" onclick="openAddMeeting()"><i class="ti ti-plus" style="font-size:12px"></i>Meeting</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div class="content" id="view-dashboard">
+    <div class="row3">
+      <div class="metric"><div class="metric-label">Done today</div><div class="metric-value" id="m-done">0/0</div><div class="metric-sub" id="m-sub">Getting started</div></div>
+      <div class="metric"><div class="metric-label">Next meeting</div><div class="metric-value" id="m-meet" style="font-size:14px;padding-top:4px">—</div><div class="metric-sub" id="m-meet-sub">No meetings today</div></div>
+      <div class="metric"><div class="metric-label">Active projects</div><div class="metric-value" id="m-proj">0</div><div class="metric-sub">Click to open any</div></div>
+    </div>
+    <div class="row2">
+      <div class="card"><div class="ch"><div class="ct"><i class="ti ti-checklist"></i>Today's tasks</div><span class="badge bp" id="tc-badge">0</span></div><div id="dash-tasks"></div></div>
+      <div class="card"><div class="ch"><div class="ct"><i class="ti ti-clock"></i>Schedule</div><button class="btn-sm" onclick="openAddMeeting()" style="padding:3px 8px;font-size:11px">+ Add</button></div><div id="dash-meets"></div></div>
+    </div>
+    <div class="card"><div class="ch"><div class="ct"><i class="ti ti-folders"></i>Projects</div><button class="btn-sm" onclick="openAddProject()" style="padding:3px 8px;font-size:11px">+ Add</button></div><div id="dash-projs"></div></div>
+    <div class="card"><div class="ch"><div class="ct"><i class="ti ti-target"></i>Goals</div><button class="btn-sm" onclick="showView('goals')" style="padding:3px 8px;font-size:11px">View all</button></div><div id="dash-goals"></div></div>
+  </div>
+
+  <!-- CALENDAR VIEW -->
+  <div class="content hidden" id="view-calendar">
+    <div class="card">
+      <div class="ch">
+        <button class="btn-sm" onclick="calNav(-1)"><i class="ti ti-chevron-left"></i></button>
+        <div class="ct" id="cal-title" style="justify-content:center;flex:1;font-size:14px"></div>
+        <button class="btn-sm" onclick="calNav(1)"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;display:flex;align-items:center;gap:5px"><i class="ti ti-drag-drop" style="font-size:13px"></i>Drag task pills to reschedule to another day</div>
+      <div class="cal-grid" id="cal-heads"></div>
+      <div style="height:8px"></div>
+      <div class="cal-grid" id="cal-body"></div>
+    </div>
+    <div class="card hidden" id="cal-day-detail">
+      <div class="ch"><div class="ct" id="cal-day-title"></div><button class="icon-btn" onclick="document.getElementById('cal-day-detail').classList.add('hidden')"><i class="ti ti-x"></i></button></div>
+      <div id="cal-day-tasks"></div>
+    </div>
+  </div>
+
+  <!-- TASKS VIEW -->
+  <div class="content hidden" id="view-tasks">
+    <div class="card"><div class="ch"><div class="ct"><i class="ti ti-checklist"></i>All tasks</div><button class="btn-p" onclick="openAddTask()"><i class="ti ti-plus" style="font-size:12px"></i>Add task</button></div><div id="all-tasks"></div></div>
+  </div>
+
+  <!-- GOALS VIEW -->
+  <div class="content hidden" id="view-goals">
+    <div class="card"><div class="ch"><div class="ct"><i class="ti ti-target"></i>Goals & milestones</div><button class="btn-p" onclick="openAddGoal()"><i class="ti ti-plus" style="font-size:12px"></i>Add goal</button></div><div id="full-goals"></div></div>
+  </div>
+</div>
+
+<!-- AI PANEL -->
+<div class="ai-panel">
+  <div class="ai-head">
+    <i class="ti ti-sparkles" style="font-size:16px;color:var(--purple)"></i>
+    <div class="ai-head-title">AI Assistant</div>
+    <span class="ai-badge">Claude</span>
+  </div>
+  <div class="ai-msgs" id="ai-messages">
+    <div class="ai-msg ai">Hi! I'm your AI assistant powered by Claude. Ask me to break down tasks, prioritize your day, give business advice, or anything else on your mind.</div>
+  </div>
+  <div class="chips">
+    <div class="chip" onclick="quickAsk('What should I prioritize today?')">Prioritize my day</div>
+    <div class="chip" onclick="quickAsk('What tasks are due soon?')">Due soon</div>
+    <div class="chip" onclick="quickAsk('Give me tips on running a business efficiently')">Business tips</div>
+    <div class="chip" onclick="quickAsk('Help me think through my goals for this quarter')">Review goals</div>
+  </div>
+  <div class="ai-inp-row">
+    <input type="text" id="ai-input" placeholder="Ask anything..." onkeydown="if(event.key==='Enter')sendAI()"/>
+    <button class="ai-send" onclick="sendAI()"><i class="ti ti-send"></i></button>
+  </div>
+</div>
+
+</div><!-- end .app -->
+
+<!-- OVERLAYS -->
+<div class="ov hidden" id="focus-ov">
+  <div class="panel" style="width:420px">
+    <div class="ph"><div class="pt"><i class="ti ti-bolt" style="color:var(--purple);margin-right:5px"></i>Focus mode — top 3 tasks</div><button class="icon-btn" onclick="closeOv('focus-ov')"><i class="ti ti-x"></i></button></div>
+    <div class="tb" id="focus-tasks"></div>
+    <div style="padding:12px 18px;border-top:1px solid var(--border);font-size:11px;color:var(--text3);text-align:center">Complete these before anything else. You've got this.</div>
+  </div>
+</div>
+
+<div class="ov hidden" id="proj-ov">
+  <div class="panel" style="width:700px;max-height:86vh">
+    <div class="ph">
+      <div class="dot" id="proj-dot" style="width:10px;height:10px"></div>
+      <div class="pt" id="proj-panel-title">Project</div>
+      <span class="badge bp" id="proj-pct-badge">0%</span>
+      <input type="range" min="0" max="100" step="1" id="proj-slider" style="width:80px" oninput="updPct(this.value)"/>
+      <button class="icon-btn" onclick="closeOv('proj-ov');saveData();renderAll()"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="ptabs">
+      <div class="ptab active" onclick="switchTab('subtasks')" id="tab-subtasks"><i class="ti ti-checklist"></i>Tasks</div>
+      <div class="ptab" onclick="switchTab('notes')" id="tab-notes"><i class="ti ti-notes"></i>Notes</div>
+      <div class="ptab" onclick="switchTab('studio')" id="tab-studio"><i class="ti ti-pencil"></i>Design studio</div>
+      <div class="ptab" onclick="switchTab('files')" id="tab-files"><i class="ti ti-folder"></i>Files</div>
+    </div>
+    <div class="tb" id="proj-tab-body"></div>
+  </div>
+</div>
+
+<!-- ADD FORMS -->
+<div class="ov hidden" id="add-task-ov">
+  <div class="panel" style="width:420px">
+    <div class="ph"><div class="pt"><i class="ti ti-plus" style="color:var(--purple);margin-right:5px"></i>Add task</div><button class="icon-btn" onclick="closeOv('add-task-ov')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-form">
+      <div class="form-row"><div class="form-label">Task name</div><input type="text" id="f-task-text" placeholder="What needs to be done?" autofocus onkeydown="if(event.key==='Enter')submitAddTask()"/></div>
+      <div class="row2" style="gap:8px">
+        <div class="form-row"><div class="form-label">Time</div><input type="text" id="f-task-time" placeholder="e.g. 9:00 AM"/></div>
+        <div class="form-row"><div class="form-label">Due date</div><input type="date" id="f-task-due"/></div>
+      </div>
+      <div class="form-row"><div class="form-label">Project</div><select id="f-task-proj"></select></div>
+      <div class="form-actions"><button class="btn-danger" onclick="closeOv('add-task-ov')">Cancel</button><button class="btn-p" onclick="submitAddTask()"><i class="ti ti-plus" style="font-size:12px"></i>Add task</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov hidden" id="add-meeting-ov">
+  <div class="panel" style="width:420px">
+    <div class="ph"><div class="pt"><i class="ti ti-calendar" style="color:var(--purple);margin-right:5px"></i>Add meeting</div><button class="icon-btn" onclick="closeOv('add-meeting-ov')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-form">
+      <div class="form-row"><div class="form-label">Meeting name</div><input type="text" id="f-meet-name" placeholder="e.g. Investor Sync" onkeydown="if(event.key==='Enter')submitAddMeeting()"/></div>
+      <div class="row2" style="gap:8px">
+        <div class="form-row"><div class="form-label">Time</div><input type="text" id="f-meet-time" placeholder="e.g. 2:00 PM"/></div>
+        <div class="form-row"><div class="form-label">Details</div><input type="text" id="f-meet-detail" placeholder="e.g. Zoom · 30 min"/></div>
+      </div>
+      <div class="form-actions"><button class="btn-danger" onclick="closeOv('add-meeting-ov')">Cancel</button><button class="btn-p" onclick="submitAddMeeting()"><i class="ti ti-check" style="font-size:12px"></i>Save</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov hidden" id="add-project-ov">
+  <div class="panel" style="width:420px">
+    <div class="ph"><div class="pt"><i class="ti ti-folder" style="color:var(--purple);margin-right:5px"></i>New project</div><button class="icon-btn" onclick="closeOv('add-project-ov')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-form">
+      <div class="form-row"><div class="form-label">Project name</div><input type="text" id="f-proj-name" placeholder="e.g. Product Launch" onkeydown="if(event.key==='Enter')submitAddProject()"/></div>
+      <div class="form-row"><div class="form-label">Color</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px" id="proj-color-picker">
+          <div class="csw" style="background:#7F77DD;border:2px solid #7F77DD;width:24px;height:24px" onclick="selectProjColor('#7F77DD',this)"></div>
+          <div class="csw" style="background:#1D9E75;width:24px;height:24px;border:2px solid transparent" onclick="selectProjColor('#1D9E75',this)"></div>
+          <div class="csw" style="background:#EF9F27;width:24px;height:24px;border:2px solid transparent" onclick="selectProjColor('#EF9F27',this)"></div>
+          <div class="csw" style="background:#D85A30;width:24px;height:24px;border:2px solid transparent" onclick="selectProjColor('#D85A30',this)"></div>
+          <div class="csw" style="background:#D4537E;width:24px;height:24px;border:2px solid transparent" onclick="selectProjColor('#D4537E',this)"></div>
+          <div class="csw" style="background:#378ADD;width:24px;height:24px;border:2px solid transparent" onclick="selectProjColor('#378ADD',this)"></div>
+          <div class="csw" style="background:#639922;width:24px;height:24px;border:2px solid transparent" onclick="selectProjColor('#639922',this)"></div>
+          <div class="csw" style="background:#888780;width:24px;height:24px;border:2px solid transparent" onclick="selectProjColor('#888780',this)"></div>
+        </div>
+      </div>
+      <div class="form-actions"><button class="btn-danger" onclick="closeOv('add-project-ov')">Cancel</button><button class="btn-p" onclick="submitAddProject()"><i class="ti ti-plus" style="font-size:12px"></i>Create</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov hidden" id="add-goal-ov">
+  <div class="panel" style="width:420px">
+    <div class="ph"><div class="pt"><i class="ti ti-target" style="color:var(--purple);margin-right:5px"></i>Add goal</div><button class="icon-btn" onclick="closeOv('add-goal-ov')"><i class="ti ti-x"></i></button></div>
+    <div class="modal-form">
+      <div class="form-row"><div class="form-label">Goal name</div><input type="text" id="f-goal-label" placeholder="e.g. Close seed round"/></div>
+      <div class="row2" style="gap:8px">
+        <div class="form-row"><div class="form-label">Target value</div><input type="text" id="f-goal-target" placeholder="e.g. 100"/></div>
+        <div class="form-row"><div class="form-label">Unit</div><input type="text" id="f-goal-unit" placeholder="e.g. %, hires, $"/></div>
+      </div>
+      <div class="form-row"><div class="form-label">Target period</div><input type="text" id="f-goal-period" placeholder="e.g. Q3 2026"/></div>
+      <div class="form-actions"><button class="btn-danger" onclick="closeOv('add-goal-ov')">Cancel</button><button class="btn-p" onclick="submitAddGoal()"><i class="ti ti-plus" style="font-size:12px"></i>Add goal</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const {jsPDF}=window.jspdf||{};
+const PROJ_COLORS=['#7F77DD','#1D9E75','#EF9F27','#D85A30','#D4537E','#378ADD','#639922','#888780'];
+const BADGE_MAP={'#7F77DD':'bp','#1D9E75':'bt','#EF9F27':'ba','#D85A30':'bc','#D4537E':'bk','#378ADD':'bb','#639922':'bgn','#888780':'bgr'};
+const now=new Date(),Y=now.getFullYear(),M=now.getMonth(),D=now.getDate();
+function mkDate(offset=0){const d=new Date(Y,M,D+offset);return d.toISOString().split('T')[0];}
+function fmtDate(iso){if(!iso)return '';const d=new Date(iso+'T00:00:00');return d.toLocaleDateString('en-PH',{month:'short',day:'numeric'});}
+function ts(){return new Date().toLocaleString('en-PH',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+
+// DEFAULT DATA
+const DEFAULT_DATA={
+  tasks:[
+    {id:1,text:'Update investor deck',time:'9:00 AM',done:false,project:'Fundraising',due:mkDate(0)},
+    {id:2,text:'Review Q2 budget',time:'10:30 AM',done:false,project:'Ops & Finance',due:mkDate(0)},
+    {id:3,text:'Follow up with design agency',time:'12:00 PM',done:false,project:'Marketing Site',due:mkDate(2)},
+    {id:4,text:'Review partnership MOU',time:'3:30 PM',done:false,project:'Partnerships',due:mkDate(3)},
+  ],
+  meetings:[
+    {id:1,hour:'10',min:'30',period:'AM',name:'Budget Review',detail:'Accountant · 30 min',color:'#EF9F27'},
+    {id:2,hour:'2',min:'00',period:'PM',name:'Investor Sync',detail:'Zoom · 45 min',color:'#7F77DD'},
+  ],
+  projects:[
+    {id:1,name:'Product Launch',color:'#7F77DD',pct:72,notes:[],files:[],subtasks:[{text:'Finalize features',done:true},{text:'QA testing',done:false}],strokes:[],pins:[]},
+    {id:2,name:'Marketing Site',color:'#1D9E75',pct:45,notes:[],files:[],subtasks:[{text:'Homepage copy',done:true},{text:'Mobile design',done:false}],strokes:[],pins:[]},
+    {id:3,name:'Fundraising',color:'#EF9F27',pct:30,notes:[],files:[],subtasks:[{text:'Pitch deck v2',done:false},{text:'Investor list',done:true}],strokes:[],pins:[]},
+    {id:4,name:'Ops & Finance',color:'#D85A30',pct:60,notes:[],files:[],subtasks:[{text:'Q2 budget review',done:false},{text:'Payroll setup',done:true}],strokes:[],pins:[]},
+    {id:5,name:'Partnerships',color:'#378ADD',pct:55,notes:[],files:[],subtasks:[{text:'Draft MOU',done:false},{text:'Intro call',done:true}],strokes:[],pins:[]},
+  ],
+  goals:[
+    {id:1,label:'Close seed round',current:30,target:100,unit:'%',period:'Q3 2026',color:'#EF9F27'},
+    {id:2,label:'Launch product v1',current:72,target:100,unit:'%',period:'Jul 2026',color:'#7F77DD'},
+    {id:3,label:'Grow newsletter',current:2400,target:5000,unit:' subs',period:'Dec 2026',color:'#1D9E75'},
+  ]
+};
+
+// LOAD / SAVE
+function loadData(){
+  try{const d=localStorage.getItem('founderos_v5');return d?JSON.parse(d):null;}catch(e){return null;}
+}
+function saveData(){
+  try{localStorage.setItem('founderos_v5',JSON.stringify({tasks,meetings,projects,goals}));}catch(e){}
+}
+const saved=loadData();
+let tasks=saved?.tasks||JSON.parse(JSON.stringify(DEFAULT_DATA.tasks));
+let meetings=saved?.meetings||JSON.parse(JSON.stringify(DEFAULT_DATA.meetings));
+let projects=saved?.projects||JSON.parse(JSON.stringify(DEFAULT_DATA.projects));
+let goals=saved?.goals||JSON.parse(JSON.stringify(DEFAULT_DATA.goals));
+// ensure strokes/pins/studioImg exist
+projects.forEach(p=>{if(!p.strokes)p.strokes=[];if(!p.pins)p.pins=[];});
+
+let activeView='dashboard',activeProjId=null,activeTab='subtasks';
+let calYear=Y,calMonth=M,dragTaskId=null;
+let studioMode='pen',drawColor='#534AB7',drawSize=3,isDrawing=false;
+let activeCanvas=null,activeCtx=null,currentStroke=null;
+let activePinId=null;
+let taskIdSeq=100,meetIdSeq=100,goalIdSeq=100,projIdSeq=100;
+let selectedProjColor='#7F77DD';
+let newProjBadge='bp';
+
+function projColor(p){return p.color||'#7F77DD';}
+function projBadge(p){return BADGE_MAP[projColor(p)]||'bgr';}
+function taskBadge(proj){const p=projects.find(x=>x.name===proj);if(!p)return `<span class="badge bgr">${proj||''}</span>`;return `<span class="badge ${projBadge(p)}">${proj}</span>`;}
+
+// VIEW SWITCHING
+function showView(v){
+  activeView=v;
+  ['dashboard','calendar','tasks','goals'].forEach(x=>{
+    document.getElementById('view-'+x).classList.toggle('hidden',x!==v);
+    document.getElementById('nav-'+x)?.classList.toggle('active',x===v);
+  });
+  const titles={dashboard:'Good morning!',calendar:'Calendar',tasks:'All tasks',goals:'Goals & milestones'};
+  document.getElementById('view-title').textContent=titles[v]||'FounderOS';
+  if(v==='calendar')renderCalendar();
+  renderAll();
+}
+
+function renderAll(){
+  renderDashTasks();renderAllTasks();renderDashMeets();renderDashProjs();
+  renderGoals('dash-goals',true);renderGoals('full-goals',false);
+  renderSidebarProjs();updateMetrics();
+}
+
+// TASKS
+function renderDashTasks(){
+  const el=document.getElementById('dash-tasks');
+  const today=tasks.filter(t=>t.due===mkDate(0));
+  el.innerHTML=today.length?today.map(t=>taskHTML(t,true)).join(''):'<div style="color:var(--text3);font-size:12px;padding:8px 0">No tasks due today. Add one!</div>';
+}
+function renderAllTasks(){
+  const el=document.getElementById('all-tasks');
+  if(!el)return;
+  el.innerHTML=tasks.length?tasks.map(t=>taskHTML(t,false)).join(''):'<div style="color:var(--text3);font-size:12px;padding:8px 0">No tasks yet. Add your first one!</div>';
+}
+function taskHTML(t,compact){
+  return `<div class="task-item">
+    <div class="chk ${t.done?'done':''}" onclick="toggleTask(${t.id})" role="checkbox" aria-checked="${t.done}" aria-label="${t.text}">
+      ${t.done?'<i class="ti ti-check" style="font-size:9px;color:#fff"></i>':''}
+    </div>
+    <div class="task-body">
+      <div class="task-text ${t.done?'done':''}">${t.text}</div>
+      <div class="task-meta"><span class="task-time">${t.time||''}</span>${taskBadge(t.project)}${t.due?`<span class="task-time">${fmtDate(t.due)}</span>`:''}</div>
+    </div>
+    ${!compact?`<button class="icon-btn" onclick="deleteTask(${t.id})" aria-label="Delete"><i class="ti ti-trash"></i></button>`:''}
+  </div>`;
+}
+function toggleTask(id){const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;saveData();renderAll();if(activeView==='calendar')renderCalendar();}}
+function deleteTask(id){if(!confirm('Delete this task?'))return;tasks=tasks.filter(x=>x.id!==id);saveData();renderAll();if(activeView==='calendar')renderCalendar();}
+
+// MEETINGS
+function renderDashMeets(){
+  const el=document.getElementById('dash-meets');
+  el.innerHTML=meetings.length?meetings.map(m=>`
+    <div class="meet-item">
+      <div class="meet-time-block"><div class="meet-hour">${m.hour}:${m.min}</div><div class="meet-period">${m.period}</div></div>
+      <div class="meet-bar" style="background:${m.color}"></div>
+      <div class="meet-info"><div class="meet-name">${m.name}</div><div class="meet-detail">${m.detail}</div></div>
+      <button class="icon-btn" onclick="deleteMeeting(${m.id})" aria-label="Delete"><i class="ti ti-trash"></i></button>
+    </div>`).join(''):'<div style="color:var(--text3);font-size:12px;padding:8px 0">No meetings yet.</div>';
+}
+function deleteMeeting(id){meetings=meetings.filter(x=>x.id!==id);saveData();renderAll();}
+
+// PROJECTS DASH
+function renderDashProjs(){
+  const el=document.getElementById('dash-projs');
+  el.innerHTML=projects.length?projects.map(p=>`
+    <div class="proj-row" onclick="openProj(${p.id})" role="button" aria-label="Open ${p.name}">
+      <div class="dot" style="background:${projColor(p)}"></div>
+      <div class="proj-name">${p.name}</div>
+      <div class="prog-track"><div class="prog-fill" style="width:${p.pct}%;background:${projColor(p)}"></div></div>
+      <div class="prog-pct">${p.pct}%</div>
+      <i class="ti ti-chevron-right" style="font-size:12px;color:var(--text3)"></i>
+    </div>`).join(''):'<div style="color:var(--text3);font-size:12px;padding:8px 0">No projects yet. Add your first one!</div>';
+}
+function renderSidebarProjs(){
+  const el=document.getElementById('sidebar-projects');
+  el.innerHTML=projects.map(p=>`
+    <div class="nav-item ${activeProjId===p.id&&document.getElementById('proj-ov')&&!document.getElementById('proj-ov').classList.contains('hidden')?'active':''}" onclick="openProj(${p.id})">
+      <div class="dot" style="background:${projColor(p)}"></div>${p.name}
+    </div>`).join('');
+}
+
+// GOALS
+function renderGoals(elId,compact){
+  const el=document.getElementById(elId);if(!el)return;
+  const list=compact?goals.slice(0,3):goals;
+  el.innerHTML=list.length?list.map(g=>{
+    const pct=Math.round((g.current/g.target)*100);
+    return `<div class="goal-item">
+      <div class="goal-header">
+        <div class="dot" style="background:${g.color}"></div>
+        <div class="goal-label">${g.label}</div>
+        <div style="font-size:11px;color:var(--text2)">${g.current}${g.unit} / ${g.target}${g.unit}</div>
+        ${!compact?`<button class="icon-btn" onclick="deleteGoal(${g.id})" aria-label="Delete"><i class="ti ti-trash"></i></button>`:''}
+      </div>
+      <div class="goal-track"><div class="goal-fill" style="width:${pct}%;background:${g.color}"></div></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">${pct}% · ${g.period}</div>
+      ${!compact?`<input type="range" min="0" max="${g.target}" step="1" value="${g.current}" style="width:100%;margin-top:6px" oninput="updateGoal(${g.id},this.value)" aria-label="Update ${g.label}"/>`:''}
+    </div>`;
+  }).join(''):'<div style="color:var(--text3);font-size:12px;padding:8px 0">No goals yet. Add one!</div>';
+}
+function updateGoal(id,v){const g=goals.find(x=>x.id===id);if(g){g.current=parseInt(v);saveData();renderGoals('dash-goals',true);renderGoals('full-goals',false);}}
+function deleteGoal(id){if(!confirm('Delete this goal?'))return;goals=goals.filter(x=>x.id!==id);saveData();renderAll();}
+
+// METRICS
+function updateMetrics(){
+  const done=tasks.filter(t=>t.done).length;
+  document.getElementById('m-done').textContent=done+'/'+tasks.length;
+  document.getElementById('m-sub').textContent=done===tasks.length&&tasks.length>0?'All done!':'Keep going!';
+  document.getElementById('m-proj').textContent=projects.length;
+  document.getElementById('badge-tasks').textContent=(tasks.length-done)+' tasks left';
+  document.getElementById('badge-mtg').textContent=meetings.length+' meeting'+(meetings.length!==1?'s':'');
+  const tc=document.getElementById('tc-badge');if(tc)tc.textContent=tasks.filter(t=>t.due===mkDate(0)).length+' today';
+  if(meetings.length){const m=meetings[0];document.getElementById('m-meet').textContent=m.name;document.getElementById('m-meet-sub').textContent=m.hour+':'+m.min+' '+m.period;}
+  else{document.getElementById('m-meet').textContent='—';document.getElementById('m-meet-sub').textContent='No meetings today';}
+}
+
+// CALENDAR
+function renderCalendar(){
+  const first=new Date(calYear,calMonth,1).getDay(),days=new Date(calYear,calMonth+1,0).getDate(),prev=new Date(calYear,calMonth,0).getDate();
+  const mN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-title').textContent=mN[calMonth]+' '+calYear;
+  document.getElementById('cal-heads').innerHTML=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>`<div class="cal-dh">${d}</div>`).join('');
+  let c='';
+  for(let i=0;i<first;i++) c+=`<div class="cal-cell other-month" ondragover="calDragOver(event,this)" ondragleave="calDragLeave(this)" ondrop="calDrop(event,'')"><div class="cal-num">${prev-first+i+1}</div></div>`;
+  for(let d=1;d<=days;d++){
+    const iso=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dt=tasks.filter(t=>t.due===iso);
+    const isToday=calYear===Y&&calMonth===M&&d===D;
+    c+=`<div class="cal-cell${isToday?' today':''}" onclick="showCalDay('${iso}')" ondragover="calDragOver(event,this)" ondragleave="calDragLeave(this)" ondrop="calDrop(event,'${iso}')">
+      <div class="cal-num">${d}</div>
+      ${dt.map(t=>`<div class="cal-pill" style="background:${projColor(projects.find(p=>p.name===t.project)||{})||'#888'}22;color:${projColor(projects.find(p=>p.name===t.project)||{})||'#444'}" draggable="true" ondragstart="calDragStart(event,${t.id})" ondragend="calDragEnd(event)" title="${t.text}">${t.text.length>14?t.text.slice(0,14)+'…':t.text}</div>`).join('')}
+    </div>`;
+  }
+  const rem=(7-(first+days)%7)%7;
+  for(let d=1;d<=rem;d++) c+=`<div class="cal-cell other-month" ondragover="calDragOver(event,this)" ondragleave="calDragLeave(this)" ondrop="calDrop(event,'')"><div class="cal-num">${d}</div></div>`;
+  document.getElementById('cal-body').innerHTML=c;
+}
+function calNav(d){calMonth+=d;if(calMonth>11){calMonth=0;calYear++;}if(calMonth<0){calMonth=11;calYear--;}renderCalendar();}
+function calDragStart(e,id){dragTaskId=id;e.dataTransfer.effectAllowed='move';setTimeout(()=>{if(e.target)e.target.classList.add('dragging');},0);}
+function calDragEnd(e){e.target.classList.remove('dragging');dragTaskId=null;}
+function calDragOver(e,cell){e.preventDefault();e.dataTransfer.dropEffect='move';cell.classList.add('drag-over');}
+function calDragLeave(cell){cell.classList.remove('drag-over');}
+function calDrop(e,iso){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(dragTaskId&&iso){const t=tasks.find(x=>x.id===dragTaskId);if(t){t.due=iso;saveData();showToast('Task rescheduled to '+fmtDate(iso));}}
+  dragTaskId=null;renderCalendar();
+}
+function showCalDay(iso){
+  const dt=tasks.filter(t=>t.due===iso);
+  const det=document.getElementById('cal-day-detail');
+  document.getElementById('cal-day-title').textContent='Tasks for '+fmtDate(iso);
+  document.getElementById('cal-day-tasks').innerHTML=dt.length?dt.map(t=>`
+    <div class="task-item">
+      <div class="chk ${t.done?'done':''}" onclick="toggleTask(${t.id});showCalDay('${iso}')" role="checkbox" aria-checked="${t.done}">${t.done?'<i class="ti ti-check" style="font-size:9px;color:#fff"></i>':''}</div>
+      <div class="task-body"><div class="task-text ${t.done?'done':''}">${t.text}</div><div class="task-meta">${taskBadge(t.project)}<span class="task-time">${t.time||''}</span></div></div>
+    </div>`).join(''):'<div style="color:var(--text3);font-size:12px;padding:6px 0">No tasks due this day.</div>';
+  det.classList.remove('hidden');
+}
+
+// PROJECT PANEL
+function openProj(id){
+  activeProjId=id;activeTab='subtasks';activePinId=null;
+  const p=projects.find(x=>x.id===id);if(!p)return;
+  document.getElementById('proj-dot').style.background=projColor(p);
+  document.getElementById('proj-panel-title').textContent=p.name;
+  document.getElementById('proj-pct-badge').textContent=p.pct+'%';
+  document.getElementById('proj-slider').value=p.pct;
+  document.getElementById('proj-ov').classList.remove('hidden');
+  renderProjTab();renderSidebarProjs();
+}
+function closeOv(id){document.getElementById(id).classList.add('hidden');}
+function updPct(v){const p=projects.find(x=>x.id===activeProjId);if(p){p.pct=parseInt(v);document.getElementById('proj-pct-badge').textContent=v+'%';saveData();}}
+function switchTab(tab){
+  activeTab=tab;
+  ['subtasks','notes','studio','files'].forEach(t=>{const el=document.getElementById('tab-'+t);if(el)el.classList.toggle('active',t===tab);});
+  renderProjTab();
+}
+
+function renderProjTab(){
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  const el=document.getElementById('proj-tab-body');
+  if(activeTab==='subtasks'){
+    el.innerHTML=`
+      <div id="subtask-list">${p.subtasks.map((s,i)=>`
+        <div class="subtask-item">
+          <div class="chk ${s.done?'done':''}" onclick="toggleSub(${i})" role="checkbox" aria-checked="${s.done}">${s.done?'<i class="ti ti-check" style="font-size:9px;color:#fff"></i>':''}</div>
+          <div class="st ${s.done?'done':''}">${s.text}</div>
+          <button class="icon-btn" onclick="deleteSub(${i})" aria-label="Delete"><i class="ti ti-trash"></i></button>
+        </div>`).join('')}</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input type="text" id="new-sub" placeholder="Add subtask…" style="flex:1" onkeydown="if(event.key==='Enter')addSub()" aria-label="New subtask"/>
+        <button class="btn-p" onclick="addSub()">Add</button>
+      </div>`;
+  } else if(activeTab==='notes'){
+    el.innerHTML=`
+      <div>${p.notes.map(n=>`
+        <div class="note-card">
+          <div class="note-time">${n.time}${n.project?`<span class="badge ${projBadge(projects.find(x=>x.name===n.project)||{})||'bgr'}" style="font-size:10px">${n.project}</span>`:''}</div>
+          ${n.text?`<div style="font-size:12px;color:var(--text);line-height:1.55;white-space:pre-wrap">${n.text}</div>`:''}
+          ${n.imageData?`<img src="${n.imageData}" style="width:100%;border-radius:var(--radius);margin-top:6px;max-height:160px;object-fit:contain;background:#f5f5f5" alt="Note image"/>`:''}
+        </div>`).join('')}</div>
+      <select id="note-proj-sel" style="width:100%;margin-bottom:8px" aria-label="Tag project">
+        <option value="">Tag a project (optional)</option>
+        ${projects.map(pp=>`<option value="${pp.name}" ${pp.id===activeProjId?'selected':''}>${pp.name}</option>`).join('')}
+      </select>
+      <textarea id="note-input" placeholder="Write a note…" aria-label="Note text"></textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+        <button class="btn-sm" onclick="document.getElementById('note-img-in').click()"><i class="ti ti-photo" style="font-size:12px"></i>Add photo</button>
+        <input type="file" id="note-img-in" accept="image/*" style="display:none" onchange="attachImg(this)" aria-label="Attach image"/>
+        <span id="note-img-status" style="font-size:11px;color:var(--text3)"></span>
+        <button class="btn-p" onclick="saveNote()" style="margin-left:auto">Save note</button>
+      </div>`;
+    window._pendingImg=null;
+  } else if(activeTab==='studio'){
+    renderStudioTab(p);
+  } else if(activeTab==='files'){
+    el.innerHTML=`
+      <div class="file-drop" onclick="document.getElementById('file-in').click()" role="button">
+        <i class="ti ti-upload" style="font-size:24px;margin-bottom:7px;display:block"></i>
+        <div style="font-size:13px;font-weight:500">Click to upload files</div>
+        <div style="font-size:11px;margin-top:3px;color:var(--text3)">Any file type · stored with this project</div>
+      </div>
+      <input type="file" id="file-in" multiple style="display:none" onchange="handleFiles(this)" aria-label="Upload files"/>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${p.files.map((f,i)=>`
+        <div class="file-item">
+          <i class="ti ti-file" style="font-size:16px;color:var(--text3)"></i>
+          <div class="file-name">${f.name}</div><div class="file-size">${f.size}</div>
+          <button class="icon-btn" onclick="deleteFile(${i})" aria-label="Delete file"><i class="ti ti-trash"></i></button>
+        </div>`).join('')}</div>`;
+  }
+}
+
+// STUDIO (merged canvas + review)
+function renderStudioTab(p){
+  const el=document.getElementById('proj-tab-body');
+  el.innerHTML=`
+    <div class="studio-toolbar">
+      <div class="mode-group">
+        <button class="mode-btn ${studioMode==='pen'?'active':''}" onclick="setMode('pen')" id="sm-pen"><i class="ti ti-pencil"></i>Draw</button>
+        <button class="mode-btn ${studioMode==='marker'?'active':''}" onclick="setMode('marker')" id="sm-marker"><i class="ti ti-highlight"></i>Marker</button>
+        <button class="mode-btn ${studioMode==='review'?'active':''}" onclick="setMode('review')" id="sm-review"><i class="ti ti-message-circle"></i>Review pins</button>
+        <button class="mode-btn ${studioMode==='eraser'?'active':''}" onclick="setMode('eraser')" id="sm-eraser"><i class="ti ti-eraser"></i>Eraser</button>
+      </div>
+      <div class="divider"></div>
+      ${['#534AB7','#E24B4A','#1D9E75','#EF9F27','#378ADD','#D4537E','#000000','#ffffff'].map(c=>`<div class="csw ${drawColor===c?'active':''}" style="background:${c};width:18px;height:18px;border:2px solid ${drawColor===c?'var(--text)':'transparent'}" onclick="setColor('${c}')" role="button" aria-label="Color"></div>`).join('')}
+      <div class="divider"></div>
+      ${[2,4,8].map((s,i)=>`<button class="szb ${drawSize===s?'active':''}" onclick="setSize(${s})" aria-label="Size ${s}"><div style="width:${s}px;height:${s}px;border-radius:50%;background:${drawSize===s?'#fff':'var(--text)'}"></div></button>`).join('')}
+      <div style="margin-left:auto;display:flex;gap:5px;flex-wrap:wrap">
+        <button class="btn-sm" onclick="document.getElementById('studio-img-in').click()"><i class="ti ti-upload" style="font-size:11px"></i>Load image</button>
+        <input type="file" id="studio-img-in" accept="image/*" style="display:none" onchange="loadStudioImg(this)" aria-label="Load image"/>
+        <button class="btn-sm" onclick="undoStroke()"><i class="ti ti-arrow-back" style="font-size:11px"></i>Undo</button>
+        <button class="btn-sm" onclick="clearStudio()"><i class="ti ti-eraser" style="font-size:11px"></i>Clear</button>
+        <button class="btn-sm" onclick="saveStudioToNotes()"><i class="ti ti-device-floppy" style="font-size:11px"></i>Save to notes</button>
+        <button class="btn-teal" onclick="exportToPDF()"><i class="ti ti-file-type-pdf" style="font-size:11px"></i>Export PDF</button>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px" id="studio-hint">${studioMode==='review'?'Click anywhere on the image to drop a pin. Click a pin to comment.':'Draw on the image. Switch to Review pins to add comments.'}</div>
+    ${!p.studioImg?`
+      <div class="file-drop" onclick="document.getElementById('studio-img-in2').click()" role="button" style="padding:30px">
+        <i class="ti ti-photo" style="font-size:32px;margin-bottom:8px;display:block"></i>
+        <div style="font-size:14px;font-weight:500">Upload a design image</div>
+        <div style="font-size:11px;margin-top:4px;color:var(--text3)">Then draw, annotate, and pin review comments on it</div>
+      </div>
+      <input type="file" id="studio-img-in2" accept="image/*" style="display:none" onchange="loadStudioImg(this)" aria-label="Load image"/>
+    `:`
+      <div style="position:relative;display:inline-block;line-height:0;width:100%" id="studio-container">
+        <canvas id="studio-canvas" style="display:block;width:100%;border-radius:var(--radius);border:1px solid var(--border);cursor:crosshair;touch-action:none;max-height:400px" aria-label="Design studio canvas"></canvas>
+        <div id="studio-pins"></div>
+      </div>
+      <div id="pin-panel" style="margin-top:12px"></div>
+    `}`;
+  if(p.studioImg) setTimeout(()=>initStudio(p),40);
+}
+
+function setMode(m){
+  studioMode=m;
+  ['pen','marker','review','eraser'].forEach(x=>{const el=document.getElementById('sm-'+x);if(el)el.classList.toggle('active',x===m);});
+  const h=document.getElementById('studio-hint');
+  if(h)h.textContent=m==='review'?'Click anywhere on the image to drop a pin. Click a pin to comment.':'Draw on the image. Switch to Review pins to add comments.';
+}
+function setColor(c){
+  drawColor=c;
+  document.querySelectorAll('.csw').forEach(el=>{const oc=el.getAttribute('onclick')||'';const match=oc.includes(`'${c}'`);el.classList.toggle('active',match);el.style.border=match?'2px solid var(--text)':'2px solid transparent';});
+}
+function setSize(s){drawSize=s;document.querySelectorAll('.szb').forEach((el,i)=>{const active=[2,4,8][i]===s;el.classList.toggle('active',active);const dot=el.querySelector('div');if(dot)dot.style.background=active?'#fff':'var(--text)';});}
+
+function initStudio(p){
+  const canvas=document.getElementById('studio-canvas');if(!canvas)return;
+  activeCanvas=canvas;activeCtx=canvas.getContext('2d');
+  activeCtx.lineCap='round';activeCtx.lineJoin='round';
+  const img=new Image();
+  img.onload=()=>{canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;activeCtx.drawImage(img,0,0);redrawStrokes(p);renderPins(p);};
+  img.src=p.studioImg;
+  canvas.onpointerdown=e=>{if(studioMode==='review')reviewClick(e,p);else startDraw(e);};
+  canvas.onpointermove=drawStroke;
+  canvas.onpointerup=endDraw;
+  canvas.onpointerleave=endDraw;
+}
+function redrawStrokes(p){
+  if(!activeCtx||!activeCanvas||!p.studioImg)return;
+  const img=new Image();
+  img.onload=()=>{
+    activeCtx.drawImage(img,0,0,activeCanvas.width,activeCanvas.height);
+    (p.strokes||[]).forEach(s=>{
+      if(!s.points||s.points.length<2)return;
+      activeCtx.beginPath();activeCtx.strokeStyle=s.color;activeCtx.lineWidth=s.size;
+      activeCtx.globalAlpha=s.tool==='marker'?0.45:1;
+      activeCtx.globalCompositeOperation=s.tool==='eraser'?'destination-out':'source-over';
+      activeCtx.moveTo(s.points[0].x,s.points[0].y);
+      s.points.forEach(pt=>activeCtx.lineTo(pt.x,pt.y));activeCtx.stroke();
+      activeCtx.globalAlpha=1;activeCtx.globalCompositeOperation='source-over';
+    });
+  };
+  img.src=p.studioImg;
+}
+function getPos(e){
+  const r=activeCanvas.getBoundingClientRect();
+  return{x:(e.clientX-r.left)*(activeCanvas.width/r.width),y:(e.clientY-r.top)*(activeCanvas.height/r.height)};
+}
+function startDraw(e){if(studioMode==='review')return;e.preventDefault();isDrawing=true;const pos=getPos(e);currentStroke={tool:studioMode,color:drawColor,size:drawSize,points:[pos]};activeCtx.beginPath();activeCtx.moveTo(pos.x,pos.y);}
+function drawStroke(e){
+  if(!isDrawing||!activeCanvas||studioMode==='review')return;e.preventDefault();
+  const pos=getPos(e);currentStroke.points.push(pos);
+  activeCtx.strokeStyle=studioMode==='eraser'?'rgba(0,0,0,1)':drawColor;
+  activeCtx.lineWidth=studioMode==='eraser'?drawSize*3:drawSize;
+  activeCtx.globalAlpha=studioMode==='marker'?0.45:1;
+  activeCtx.globalCompositeOperation=studioMode==='eraser'?'destination-out':'source-over';
+  activeCtx.lineTo(pos.x,pos.y);activeCtx.stroke();
+  activeCtx.globalAlpha=1;activeCtx.globalCompositeOperation='source-over';
+}
+function endDraw(){
+  if(!isDrawing||studioMode==='review')return;isDrawing=false;
+  const p=projects.find(x=>x.id===activeProjId);
+  if(p&&currentStroke&&currentStroke.points.length>1){if(!p.strokes)p.strokes=[];p.strokes.push(currentStroke);saveData();}
+  currentStroke=null;
+}
+function undoStroke(){
+  const p=projects.find(x=>x.id===activeProjId);
+  if(p&&p.strokes&&p.strokes.length){p.strokes.pop();saveData();if(p.studioImg)redrawStrokes(p);}
+}
+function clearStudio(){
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  if(!confirm('Clear all strokes and pins?'))return;
+  p.strokes=[];p.pins=[];p.studioImg=null;activePinId=null;saveData();renderProjTab();
+}
+function loadStudioImg(input){
+  const file=input.files[0];if(!file)return;
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  const r=new FileReader();
+  r.onload=e=>{p.studioImg=e.target.result;p.strokes=[];p.pins=[];activePinId=null;saveData();renderProjTab();};
+  r.readAsDataURL(file);
+}
+
+// PINS
+function reviewClick(e,p){
+  if(e.target.closest&&e.target.closest('[data-pin]'))return;
+  e.preventDefault();
+  const container=document.getElementById('studio-container');if(!container)return;
+  const rect=container.getBoundingClientRect();
+  const xPct=((e.clientX-rect.left)/rect.width)*100;
+  const yPct=((e.clientY-rect.top)/rect.height)*100;
+  const id=Date.now();
+  if(!p.pins)p.pins=[];
+  p.pins.push({id,x:xPct,y:yPct,comments:[],status:'open'});
+  activePinId=id;saveData();renderPins(p);showPinPanel(p,id);
+}
+function renderPins(p){
+  const container=document.getElementById('studio-pins');if(!container)return;
+  container.innerHTML=(p.pins||[]).map((pin,i)=>`
+    <div class="pin ${pin.status==='resolved'?'resolved':''}" data-pin="${pin.id}"
+      style="left:${pin.x}%;top:${pin.y}%;background:${activePinId===pin.id?'#3C3489':pin.status==='resolved'?'#1D9E75':'#7F77DD'}"
+      onclick="activatePin(${pin.id})" role="button" aria-label="Pin ${i+1}">${i+1}</div>`).join('');
+}
+function activatePin(id){activePinId=id;const p=projects.find(x=>x.id===activeProjId);renderPins(p);showPinPanel(p,id);}
+function showPinPanel(p,id){
+  const el=document.getElementById('pin-panel');if(!el)return;
+  const pin=p.pins.find(x=>x.id===id);if(!pin)return;
+  const idx=p.pins.indexOf(pin)+1;const isRes=pin.status==='resolved';
+  el.innerHTML=`
+    <div style="border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden">
+      <div style="padding:10px 14px;background:var(--bg3);display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border)">
+        <div style="width:22px;height:22px;border-radius:50%;background:${isRes?'#1D9E75':'#7F77DD'};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0">${idx}</div>
+        <div style="font-size:12px;font-weight:500;color:var(--text);flex:1">Pin ${idx} · ${pin.comments.length} comment${pin.comments.length!==1?'s':''}</div>
+        <button style="font-size:10px;padding:3px 9px;border-radius:20px;border:none;cursor:pointer;font-weight:500;background:${isRes?'var(--teal-light)':'var(--coral-light)'};color:${isRes?'var(--teal-text)':'var(--coral-dark)'}" onclick="togglePinStatus(${id})">${isRes?'Resolved':'Open'}</button>
+        <button class="icon-btn" onclick="deletePin(${id})" aria-label="Delete pin"><i class="ti ti-trash"></i></button>
+      </div>
+      <div style="padding:10px 14px;max-height:150px;overflow-y:auto">
+        ${pin.comments.length?pin.comments.map(c=>`<div class="comment-item"><div class="comment-time">${c.time}</div><div class="comment-text">${c.text}</div></div>`).join('')
+        :'<div style="font-size:12px;color:var(--text3);padding:4px 0">No comments yet. Add one below.</div>'}
+      </div>
+      <div style="padding:9px 14px;border-top:1px solid var(--border);display:flex;gap:7px">
+        <input type="text" id="pin-inp" placeholder="Add a comment…" style="flex:1" onkeydown="if(event.key==='Enter')addPinComment(${id})" aria-label="Comment"/>
+        <button class="btn-p" onclick="addPinComment(${id})" style="padding:5px 12px">Post</button>
+      </div>
+    </div>`;
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function addPinComment(id){
+  const inp=document.getElementById('pin-inp');if(!inp||!inp.value.trim())return;
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  const pin=p.pins.find(x=>x.id===id);if(!pin)return;
+  pin.comments.push({text:inp.value.trim(),time:ts()});
+  inp.value='';saveData();renderPins(p);showPinPanel(p,id);
+}
+function togglePinStatus(id){
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  const pin=p.pins.find(x=>x.id===id);if(!pin)return;
+  pin.status=pin.status==='resolved'?'open':'resolved';saveData();renderPins(p);showPinPanel(p,id);
+}
+function deletePin(id){
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  p.pins=p.pins.filter(x=>x.id!==id);activePinId=null;saveData();
+  renderPins(p);const pp=document.getElementById('pin-panel');if(pp)pp.innerHTML='';
+}
+
+// PDF EXPORT
+async function exportToPDF(){
+  const p=projects.find(x=>x.id===activeProjId);if(!p){showToast('No project selected.');return;}
+  if(!jsPDF){showToast('PDF library loading… try again in a moment.');return;}
+  showToast('Generating PDF…');
+  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  const pw=doc.internal.pageSize.getWidth(),ph=doc.internal.pageSize.getHeight();
+  let y=15;
+  doc.setFont('helvetica','bold');doc.setFontSize(18);doc.setTextColor(83,74,183);
+  doc.text('Design Review Report',pw/2,y,{align:'center'});y+=7;
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(120,120,120);
+  doc.text(p.name+' · '+new Date().toLocaleDateString('en-PH',{year:'numeric',month:'long',day:'numeric'}),pw/2,y,{align:'center'});y+=9;
+  doc.setDrawColor(220,220,220);doc.line(15,y,pw-15,y);y+=8;
+  if(p.studioImg&&activeCanvas){
+    try{
+      const imgData=activeCanvas.toDataURL('image/jpeg',0.9);
+      const cw=activeCanvas.width,ch=activeCanvas.height;
+      const mxW=pw-30,mxH=110;const ratio=Math.min(mxW/cw,mxH/ch);
+      const iw=Math.round(cw*ratio),ih=Math.round(ch*ratio),ix=(pw-iw)/2;
+      doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(40,40,40);doc.text('Annotated design',15,y);y+=5;
+      doc.addImage(imgData,'JPEG',ix,y,iw,ih);
+      if(p.pins&&p.pins.length){
+        const imgY=y;
+        p.pins.forEach((pin,i)=>{
+          const px=ix+(pin.x/100)*iw,py=imgY+(pin.y/100)*ih;
+          doc.setFillColor(pin.status==='resolved'?29:127,pin.status==='resolved'?158:119,pin.status==='resolved'?117:221);
+          doc.circle(px,py,3,'F');doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor(255,255,255);
+          doc.text(String(i+1),px,py+0.7,{align:'center'});
+        });
+      }
+      y+=ih+8;doc.setDrawColor(220,220,220);doc.line(15,y,pw-15,y);y+=6;
+    }catch(e){}
+  }
+  if(p.pins&&p.pins.length){
+    if(y>ph-30){doc.addPage();y=15;}
+    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(40,40,40);doc.text('Review comments ('+p.pins.length+' pins)',15,y);y+=7;
+    p.pins.forEach((pin,i)=>{
+      if(y>ph-30){doc.addPage();y=15;}
+      const isRes=pin.status==='resolved';
+      doc.setFillColor(isRes?29:127,isRes?158:119,isRes?117:221);
+      doc.circle(18,y-1.5,3.5,'F');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor(255,255,255);doc.text(String(i+1),18,y-0.5,{align:'center'});
+      doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor(40,40,40);doc.text('Pin '+(i+1)+' · '+(isRes?'Resolved':'Open'),24,y);y+=5;
+      if(pin.comments.length){
+        pin.comments.forEach(c=>{
+          if(y>ph-18){doc.addPage();y=15;}
+          doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(130,130,130);doc.text(c.time,27,y);y+=3.5;
+          doc.setTextColor(50,50,50);doc.setFontSize(9);
+          doc.splitTextToSize(c.text,pw-42).forEach(line=>{if(y>ph-12){doc.addPage();y=15;}doc.text(line,27,y);y+=4;});y+=1;
+        });
+      }else{doc.setFont('helvetica','italic');doc.setFontSize(9);doc.setTextColor(160,160,160);doc.text('No comments',27,y);y+=5;}
+      y+=3;
+    });
+    doc.setDrawColor(220,220,220);doc.line(15,y,pw-15,y);y+=6;
+  }
+  if(p.notes&&p.notes.filter(n=>n.text).length){
+    if(y>ph-30){doc.addPage();y=15;}
+    doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor(40,40,40);doc.text('Project notes',15,y);y+=7;
+    p.notes.filter(n=>n.text).forEach(n=>{
+      if(y>ph-25){doc.addPage();y=15;}
+      doc.setFont('helvetica','italic');doc.setFontSize(8);doc.setTextColor(130,130,130);doc.text(n.time+(n.project?' · '+n.project:''),15,y);y+=4;
+      doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(50,50,50);
+      doc.splitTextToSize(n.text,pw-30).forEach(line=>{if(y>ph-12){doc.addPage();y=15;}doc.text(line,15,y);y+=4;});y+=4;
+    });
+  }
+  doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor(180,180,180);
+  doc.text('Generated by FounderOS · '+new Date().toLocaleDateString('en-PH'),pw/2,ph-8,{align:'center'});
+  doc.save((p.name||'project').replace(/\s+/g,'-')+'-design-review.pdf');
+  showToast('PDF downloaded!');
+}
+
+function saveStudioToNotes(){
+  if(!activeCanvas)return;
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  p.notes.unshift({text:'Design studio annotation',time:ts(),project:p.name,imageData:activeCanvas.toDataURL('image/png'),hasImage:true});
+  saveData();switchTab('notes');showToast('Saved to notes!');
+}
+
+// NOTE HELPERS
+function attachImg(input){const file=input.files[0];if(!file)return;const r=new FileReader();r.onload=e=>{window._pendingImg=e.target.result;const s=document.getElementById('note-img-status');if(s)s.textContent=file.name+' attached';};r.readAsDataURL(file);}
+function saveNote(){
+  const inp=document.getElementById('note-input');const ps=document.getElementById('note-proj-sel');
+  const p=projects.find(x=>x.id===activeProjId);
+  const text=(inp&&inp.value.trim())||'';const imgData=window._pendingImg||null;
+  if(!p||(text===''&&!imgData)){showToast('Please write something first.');return;}
+  p.notes.unshift({text,time:ts(),project:ps?ps.value:p.name,imageData:imgData,hasImage:!!imgData});
+  window._pendingImg=null;if(inp)inp.value='';saveData();renderProjTab();showToast('Note saved!');
+}
+
+// SUBTASK HELPERS
+function toggleSub(i){const p=projects.find(x=>x.id===activeProjId);if(p){p.subtasks[i].done=!p.subtasks[i].done;saveData();renderProjTab();}}
+function deleteSub(i){const p=projects.find(x=>x.id===activeProjId);if(p){p.subtasks.splice(i,1);saveData();renderProjTab();}}
+function addSub(){const inp=document.getElementById('new-sub');const p=projects.find(x=>x.id===activeProjId);if(p&&inp&&inp.value.trim()){p.subtasks.push({text:inp.value.trim(),done:false});inp.value='';saveData();renderProjTab();}}
+
+// FILE HELPERS
+function handleFiles(input){
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  Array.from(input.files).forEach(f=>{const kb=f.size/1024;p.files.push({name:f.name,size:kb<1024?Math.round(kb)+'KB':(kb/1024).toFixed(1)+'MB'});});
+  saveData();renderProjTab();showToast('File added!');
+}
+function deleteFile(i){const p=projects.find(x=>x.id===activeProjId);if(p){p.files.splice(i,1);saveData();renderProjTab();}}
+
+// FOCUS MODE
+function activateFocus(){
+  const top3=tasks.filter(t=>!t.done).slice(0,3);
+  document.getElementById('focus-tasks').innerHTML=top3.length?top3.map(t=>`
+    <div class="focus-task">
+      <div class="chk ${t.done?'done':''}" onclick="toggleTask(${t.id})" role="checkbox" aria-checked="${t.done}">${t.done?'<i class="ti ti-check" style="font-size:9px;color:#fff"></i>':''}</div>
+      <div class="task-body"><div class="focus-task-text">${t.text}</div><div class="task-meta">${taskBadge(t.project)}<span class="task-time">${t.time||''}</span></div></div>
+    </div>`).join(''):'<div style="color:var(--text3);text-align:center;padding:16px">All caught up! Great work.</div>';
+  document.getElementById('focus-ov').classList.remove('hidden');
+}
+
+// ADD FORMS
+function openAddTask(){
+  const sel=document.getElementById('f-task-proj');
+  sel.innerHTML=projects.map(p=>`<option value="${p.name}">${p.name}</option>`).join('');
+  document.getElementById('f-task-text').value='';document.getElementById('f-task-time').value='';document.getElementById('f-task-due').value='';
+  document.getElementById('add-task-ov').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('f-task-text').focus(),100);
+}
+function submitAddTask(){
+  const text=document.getElementById('f-task-text').value.trim();if(!text){showToast('Please enter a task name.');return;}
+  const time=document.getElementById('f-task-time').value;
+  const due=document.getElementById('f-task-due').value||null;
+  const proj=document.getElementById('f-task-proj').value||projects[0]?.name||'General';
+  tasks.push({id:++taskIdSeq,text,time,done:false,project:proj,due});
+  saveData();closeOv('add-task-ov');renderAll();if(activeView==='calendar')renderCalendar();showToast('Task added!');
+}
+
+function openAddMeeting(){
+  document.getElementById('f-meet-name').value='';document.getElementById('f-meet-time').value='';document.getElementById('f-meet-detail').value='';
+  document.getElementById('add-meeting-ov').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('f-meet-name').focus(),100);
+}
+function submitAddMeeting(){
+  const name=document.getElementById('f-meet-name').value.trim();if(!name){showToast('Please enter a meeting name.');return;}
+  const time=document.getElementById('f-meet-time').value||'12:00 PM';
+  const detail=document.getElementById('f-meet-detail').value;
+  const parts=time.replace(/\s?(AM|PM)/i,'').split(':');
+  const period=time.toUpperCase().includes('PM')?'PM':'AM';
+  const color=PROJ_COLORS[meetings.length%PROJ_COLORS.length];
+  meetings.push({id:++meetIdSeq,hour:parts[0]||'12',min:parts[1]||'00',period,name,detail,color});
+  saveData();closeOv('add-meeting-ov');renderAll();showToast('Meeting added!');
+}
+
+function selectProjColor(c,el){
+  selectedProjColor=c;
+  document.querySelectorAll('#proj-color-picker .csw').forEach(x=>x.style.border='2px solid transparent');
+  el.style.border=`2px solid ${c}`;
+}
+function openAddProject(){
+  document.getElementById('f-proj-name').value='';
+  document.getElementById('add-project-ov').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('f-proj-name').focus(),100);
+}
+function submitAddProject(){
+  const name=document.getElementById('f-proj-name').value.trim();if(!name){showToast('Please enter a project name.');return;}
+  projects.push({id:++projIdSeq,name,color:selectedProjColor,pct:0,notes:[],files:[],subtasks:[],strokes:[],pins:[]});
+  saveData();closeOv('add-project-ov');renderAll();showToast('Project created!');
+}
+
+function openAddGoal(){document.getElementById('add-goal-ov').classList.remove('hidden');setTimeout(()=>document.getElementById('f-goal-label').focus(),100);}
+function submitAddGoal(){
+  const label=document.getElementById('f-goal-label').value.trim();if(!label){showToast('Please enter a goal name.');return;}
+  const target=parseInt(document.getElementById('f-goal-target').value)||100;
+  const unit=document.getElementById('f-goal-unit').value||'%';
+  const period=document.getElementById('f-goal-period').value||'';
+  const color=PROJ_COLORS[goals.length%PROJ_COLORS.length];
+  goals.push({id:++goalIdSeq,label,current:0,target,unit,period,color});
+  saveData();closeOv('add-goal-ov');showView('goals');showToast('Goal added!');
+}
+
+// AI
+const AI_SHORTCUTS={
+  'What should I prioritize today?':`Here's a quick priority framework:\n\n1. Flag anything with a deadline today first\n2. Then high-impact, low-effort tasks\n3. Batch similar tasks together\n\nLook at your task list and pick the top 3 that move the needle most. Want me to help break any of them down?`,
+  'What tasks are due soon?':`Check your Calendar view for a visual overview of what's due and when. You can drag pills to reschedule.\n\nFor urgent tasks: look for anything marked today or tomorrow. Those go first.`,
+  'Give me tips on running a business efficiently?':`Key efficiency principles for founders:\n\n1. Time-block your calendar — protect deep work hours\n2. Batch meetings to 2 days a week\n3. Use a weekly review every Friday to reset priorities\n4. Delegate anything that doesn't need you specifically\n5. Say no to anything that doesn't move your top 3 goals\n\nWhat area do you want to go deeper on?`,
+  'Help me think through my goals for this quarter?':`Good quarter planning in 3 steps:\n\n1. Pick 1 north star metric (revenue, users, hires, etc.)\n2. Set 3 supporting goals that drive that metric\n3. Break each goal into monthly milestones\n\nYour Goals tab is ready to track all of these. What's your north star for this quarter?`,
+};
+function addAIMsg(text,sender){
+  const el=document.getElementById('ai-messages');
+  const div=document.createElement('div');div.className='ai-msg '+sender;div.textContent=text;
+  el.appendChild(div);el.scrollTop=el.scrollHeight;return div;
+}
+function quickAsk(q){addAIMsg(q,'user');setTimeout(()=>addAIMsg(AI_SHORTCUTS[q]||'Let me think about that…','ai'),350);}
+async function sendAI(){
+  const inp=document.getElementById('ai-input');const val=inp.value.trim();if(!val)return;
+  addAIMsg(val,'user');inp.value='';
+  const thinking=addAIMsg('Thinking…','ai loading');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        system:`You are an AI assistant built into FounderOS, a productivity and design review tool for entrepreneurs. The user is a founder running a modular cabinet manufacturing business in the Philippines under the brand Titania Studios. Be concise, practical, and warm. Use short paragraphs or numbered lists. Keep responses under 150 words unless the question clearly needs more depth.`,
+        messages:[{role:'user',content:val}]
+      })
+    });
+    const data=await res.json();
+    const reply=data.content?.map(b=>b.text||'').join('')||'Sorry, I couldn\'t get a response.';
+    thinking.textContent=reply;thinking.classList.remove('loading');
+  }catch(e){
+    thinking.textContent='Could not connect to AI. Check your internet connection.';thinking.classList.remove('loading');
+  }
+  document.getElementById('ai-messages').scrollTop=9999;
+}
+
+// INIT
+document.getElementById('topbar-date').textContent=new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+renderAll();
+
+// Keyboard shortcut: Escape closes overlays
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    ['focus-ov','proj-ov','add-task-ov','add-meeting-ov','add-project-ov','add-goal-ov'].forEach(id=>{
+      document.getElementById(id)?.classList.add('hidden');
+    });
+  }
+});
+
+// Auto-save every 30 seconds
+setInterval(saveData,30000);
+</script>
+</body>
+</html>
