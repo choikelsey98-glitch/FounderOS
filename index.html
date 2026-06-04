@@ -367,6 +367,7 @@ select{cursor:pointer}
       <div class="pt" id="proj-panel-title">Project</div>
       <span class="badge bp" id="proj-pct-badge">0%</span>
       <input type="range" min="0" max="100" step="1" id="proj-slider" style="width:80px" oninput="updPct(this.value)"/>
+      <button class="btn-danger" onclick="deleteProject()" style="font-size:11px;padding:3px 9px;margin-right:4px"><i class="ti ti-trash" style="font-size:11px"></i> Delete project</button>
       <button class="icon-btn" onclick="closeOv('proj-ov');saveData();renderAll()"><i class="ti ti-x"></i></button>
     </div>
     <div class="ptabs">
@@ -680,6 +681,14 @@ function openProj(id){
   renderProjTab();renderSidebarProjs();
 }
 function closeOv(id){document.getElementById(id).classList.add('hidden');}
+function deleteProject(){
+  const p=projects.find(x=>x.id===activeProjId);if(!p)return;
+  if(!confirm(`Delete project "${p.name}"? This will also remove all its notes, files, subtasks, and design work. This cannot be undone.`))return;
+  projects=projects.filter(x=>x.id!==activeProjId);
+  tasks=tasks.filter(t=>t.project!==p.name);
+  activeProjId=null;
+  saveData();closeOv('proj-ov');renderAll();showToast('Project deleted.');
+}
 function updPct(v){const p=projects.find(x=>x.id===activeProjId);if(p){p.pct=parseInt(v);document.getElementById('proj-pct-badge').textContent=v+'%';saveData();}}
 function switchTab(tab){
   activeTab=tab;
